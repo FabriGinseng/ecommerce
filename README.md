@@ -67,32 +67,5 @@ This will start a local development server at `http://localhost:3000`.
 
 ---
 
-### How It Works
-
-1. **Build Phase**: The `node:lts-alpine` image is used to install the dependencies and build the Vue 3 project with Vite. The final files are generated in the `dist` folder.
-
-2. **Production Phase**: The static files generated are copied into an **Nginx** image and served on port **80**.
-
----
-
-### Starting the Development Server
-
-To start the development server with hot-reload, run the following command. The server will be accessible at [http://localhost:3000](http://localhost:3000):
-
-```bash
-npm dev
-```
-
-
-### Building for Production
-
-To build your project for production, use:
-
-```bash
-npm build
-```
-
-
-Once the build process is completed, your application will be ready for deployment in a production environment.
 
 
