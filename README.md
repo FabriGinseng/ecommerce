@@ -1,9 +1,4 @@
 # 💡 Usage
-
-This section covers how to start the development server and build your project for production.
-
-Sure! Here's the translated **README.md** in English:
-
 ---
 
 ## E-Commerce Vue 3 + Vite Project
