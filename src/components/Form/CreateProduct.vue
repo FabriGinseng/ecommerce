@@ -4,7 +4,7 @@
     elevation="3"
   >
     <v-card-title class="text-h5">
-      Inserisci un Prodotto
+      {{ $t('insertProduct') }}
     </v-card-title>
 
     <v-form
@@ -18,8 +18,8 @@
             v-model="title"
             prepend-icon="mdi-format-title"
             :error-messages="errors.title"
-            label="Titolo"
-            placeholder="Inserisci il titolo del prodotto"
+            :label="$t('title')"
+            :placeholder="$t('placeholderTitle')"
             required
           />
         </v-col>
@@ -29,9 +29,9 @@
             v-model.number="price"
             prepend-icon="mdi-currency-eur"
             :error-messages="errors.price"
-            label="Prezzo"
+            :label="$t('price')"
             min="0"
-            placeholder="Inserisci il prezzo"
+            :placeholder="$t('placeholderPrice')"
             required
             type="number"
           />
@@ -42,8 +42,8 @@
             v-model="description"
             prepend-icon="mdi-format-title"
             :error-messages="errors.description"
-            label="Descrizione"
-            placeholder="Inserisci la descrizione del prodotto"
+            :label="$t('description')"
+            :placeholder="$t('placeholderDescription')"
             required
           />
         </v-col>
@@ -52,7 +52,7 @@
           <v-file-input
             :error-messages="image"
             accept="image/*"
-            label="Immagine del prodotto"
+            :label="$t('productImage')"
             required
             @change="onImageChange"
           />
@@ -70,9 +70,9 @@
             v-model.number="stock"
             prepend-icon="mdi-format-title"
             :error-messages="errors.stock"
-            label="Quantità in Stock"
+            :label="$t('stockQuantity')"
             min="0"
-            placeholder="Inserisci la quantità disponibile"
+            :placeholder="$t('stockPlaceholder')"
             required
             type="number"
           />
@@ -84,14 +84,14 @@
         color="primary"
         type="submit"
       >
-        Salva Prodotto
+        {{ $t('save') }}
       </v-btn>
       <v-btn
         class="mt-3 ml-2"
         color="error"
         @click="emit('closeDialog')"
       >
-        Chiudi
+        {{ $t('close') }}
       </v-btn>
     </v-form>
   </v-card>
@@ -103,7 +103,7 @@ import * as yup from "yup";
 import {onMounted, ref, onUnmounted} from "vue";
 import {useProductsStore} from "@/stores/productsStore.js";
 import {useNotificationStore} from "@/stores/notification.js";
-
+import i18n from "@/plugins/i18n.js";
 const props = defineProps({
   dataModel: Boolean
 });
@@ -130,31 +130,35 @@ onUnmounted(() => {
   price.value = '';
 });
 
-// Schema di validazione con Yup
+const getValidationMessage = (key) => {
+  return i18n.global.t(`validation.${key}`);
+};
+
+// Schema di validazione
 const schema = yup.object({
   title: yup
     .string()
-    .required("Il titolo è obbligatorio.")
-    .min(3, "Il titolo deve contenere almeno 3 caratteri."),
+    .required(getValidationMessage("titleRequired"))
+    .min(3, getValidationMessage("titleMinLength")),
   description: yup
     .string()
-    .required("La descrizione è obbligatoria.")
-    .min(10, "La descrizione deve contenere almeno 10 caratteri."),
+    .required(getValidationMessage("descriptionRequired"))
+    .min(10, getValidationMessage("descriptionMinLength")),
   image: yup
     .mixed()
     .test(
       "file-size",
-      "L'immagine deve essere inferiore a 500KB",
+      getValidationMessage("imageSize"),
       (value) => !value || (value.size <= 500 * 1024) // 500 KB
     ),
   stock: yup
     .number()
-    .required("La quantità in stock è obbligatoria.")
-    .min(0, "La quantità deve essere maggiore o uguale a 0."),
+    .required(getValidationMessage("stockRequired"))
+    .min(0, getValidationMessage("stockMin")),
   price: yup
     .number()
-    .required("Il prezzo è obbligatorio.")
-    .min(0, "Il prezzo deve essere maggiore di 0.")
+    .required(getValidationMessage("priceRequired"))
+    .min(0, getValidationMessage("priceMin"))
 });
 
 // VeeValidate: useForm per validazione

@@ -1,5 +1,5 @@
 <template>
-  <v-app theme="light">
+  <v-app>
     <AppHeader/>
     <v-main>
       <v-navigation-drawer

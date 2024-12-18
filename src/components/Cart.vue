@@ -1,8 +1,8 @@
 <template>
   <v-list-item
     class="my-1"
-    title="Questo è il tuo carrello"
-    :subtitle="totalPrice + ' €'"
+    :title="$t('cartTitle')"
+    :subtitle="$t('subTotalCart', { price: totalPrice })"
   />
   <v-divider />
   <v-list

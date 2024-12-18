@@ -5,7 +5,7 @@
     <v-responsive>
       <v-toolbar color="transparent">
         <v-toolbar-title>
-          Prodotti
+          {{ $t('products') }}
         </v-toolbar-title>
         <v-spacer />
         <v-row
@@ -30,7 +30,7 @@
               <template #default="{ isActive }">
                 <v-card
                   prepend-icon="mdi-filter"
-                  title="Seleziona la categoria"
+                  :title="$t('selectCategory')"
                 >
                   <v-divider class="mt-3" />
 
@@ -114,6 +114,7 @@
               style="cursor: pointer"
               color="light-blue lighten-2"
               max-height="200"
+              height="200"
               class="mx-auto"
               :src="getImage(product)"
               @click="router.push({ name: 'ProductDetails', params: { id: product.id } })"
@@ -122,7 +123,7 @@
               {{ product.title }}
             </v-card-title>
             <v-card-subtitle>
-              ci sono ancora {{ product.stock }} pezzi disponibili
+              {{ $t('stockMessage', { count: product.stock }) }}
             </v-card-subtitle>
             <v-spacer />
             <v-card-text class="justify-end">
@@ -151,11 +152,19 @@
               />
               <v-spacer />
               <v-btn
-                color="primary"
+                :color="checkDisabled(product) ? 'gray' : 'primary'"
                 variant="flat"
                 icon="mdi-cart-plus"
-                @click="addProductToCart(product)"
-              />
+                @click="checkDisabled(product) ? '' : addProductToCart(product)"
+              >
+                <v-tooltip
+                  activator="parent"
+                  location="bottom"
+                >
+                  <span>{{ checkDisabled(product) ? $t('productInTheCart') : $t('addToCart') }}</span>
+                </v-tooltip>
+                <v-icon>mdi-cart-plus</v-icon>
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -179,6 +188,7 @@ import CreateProduct from "@/components/Form/CreateProduct.vue";
 import {useDialogStore} from "@/stores/dialog.js";
 import {useCartStore} from "@/stores/cartStore.js";
 import router from "@/router/index.js";
+import i18n from "@/plugins/i18n.js";
 
 const productStore = useProductsStore()
 
@@ -261,10 +271,10 @@ const closeFormDialog = () => {
 const deleteProduct = async (product) => {
   const dialogStore = useDialogStore();
   dialogStore.openDialog({
-    title: 'Elimina Prodotto',
-    message: 'Sei sicuro di voler eliminare questo prodotto?',
-    confirmText: 'Sì, elimina',
-    cancelText: 'Annulla',
+    title: i18n.global.t('deleteDialog.title'),
+    message: i18n.global.t('deleteDialog.message'),
+    confirmText: i18n.global.t('deleteDialog.confirmText'),
+    cancelText: i18n.global.t('deleteDialog.cancelText'),
     onConfirm: async () => {
       await productStore.deleteProduct(product.id);
     },
@@ -276,6 +286,11 @@ const deleteProduct = async (product) => {
 
 const addProductToCart = (product) => {
   useCartStore().addToCart(product);
+}
+
+const checkDisabled = (product) => {
+  const result = useCartStore().cartItems.find((item) => item.id === product.id);
+  return result !== undefined;
 }
 </script>
 <style scoped>

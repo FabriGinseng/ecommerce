@@ -1,5 +1,10 @@
 <template>
-  <v-app-bar app flat dark elevation="2">
+  <v-app-bar
+    app
+    flat
+    dark
+    elevation="2"
+  >
     <!-- Logo cliccabile -->
     <template #prepend>
       <v-img
@@ -18,8 +23,8 @@
       class="mt-2"
       density="comfortable"
       menu-icon=""
-      label="Cerca un prodotto..."
-      placeholder="Digita per cercare..."
+      :label="$t('searchProducts')"
+      :placeholder="$t('searchPlacheholder')"
       prepend-inner-icon="mdi-magnify"
       variant="solo"
       hide-details
@@ -27,13 +32,43 @@
       clearable
       @update:model-value="onProductSelect"
       @update:search="handleSearchInput"
-    ></v-autocomplete>
-    <!-- Icona Carrello -->
+    />
+    <!-- Icone -->
     <template #append>
       <v-btn
         color="primary"
         icon="mdi-magnify"
-        @click="searchVisible = !searchVisible" />
+        @click="searchVisible = !searchVisible"
+      />
+      <v-btn
+        icon
+        @click="toggleTheme"
+      >
+        <v-icon>
+          {{ isDark ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}
+        </v-icon>
+      </v-btn>
+
+      <v-btn
+        icon
+        color="primary"
+        @click="toggleLanguage"
+      >
+        <v-tooltip
+          activator="parent"
+          location="bottom"
+        >
+          <span v-if="currentLocale === 'en'">
+            Italian
+          </span>
+          <span v-else>
+            English
+          </span>
+        </v-tooltip>
+        <v-icon>
+          {{ currentLocale === 'en' ? 'mdi-flag' : 'mdi-flag-outline' }}
+        </v-icon>
+      </v-btn>
       <v-btn
         color="primary"
         icon="mdi-cart"
@@ -43,11 +78,17 @@
   </v-app-bar>
 </template>
 
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useCartStore } from "@/stores/cartStore.js";
 import { useProductsStore } from "@/stores/productsStore.js";
 import router from "@/router/index.js";
+import { useTheme } from "vuetify";
+import { useI18n } from "vue-i18n";
+
+const theme = useTheme();
+const { locale } = useI18n();
 
 const cartStore = useCartStore();
 const productsStore = useProductsStore();
@@ -65,18 +106,25 @@ const handleSearchInput = (query) => {
   }, 300); // 300ms debounce
 };
 
-// Naviga alla pagina del prodotto selezionato
-const onProductSelect = (product) => {
-  if (product?.id) {
-    router.push({ name: "ProductDetails", params: { id: product.id } });
-    searchQuery.value = ""; // Resetta il campo di ricerca
-    searchResults.value = [];
-  }
-};
-
 // Apri il carrello
 const openCartSidebar = () => {
   cartStore.toggleCartSidebar();
+};
+
+// Stato per verificare se il tema attuale è scuro
+const isDark = computed(() => theme.global.name.value === "dark");
+
+// Funzione per alternare tra temi scuro e chiaro
+const toggleTheme = () => {
+  theme.global.name.value = isDark.value ? "light" : "dark";
+};
+
+// Stato corrente della lingua
+const currentLocale = computed(() => locale.value);
+
+// Funzione per alternare la lingua
+const toggleLanguage = () => {
+  locale.value = currentLocale.value === "en" ? "it" : "en";
 };
 </script>
 

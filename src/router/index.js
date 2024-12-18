@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
 import { setupLayouts } from 'virtual:generated-layouts'
-import ProductsPage from "@/components/ProductsPage.vue";
+import ProductsPage from "@/components/ProductsComponent.vue";
 import ProductDetails from "@/components/ProductDetails.vue";
 import {useProductsStore} from "@/stores/productsStore.js";
 

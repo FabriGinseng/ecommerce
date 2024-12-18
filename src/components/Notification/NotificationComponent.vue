@@ -13,7 +13,7 @@
         variant="text"
         @click="notificationStore.hideNotification"
       >
-        Chiudi
+        {{ $t('close') }}
       </v-btn>
     </template>
   </v-snackbar>
